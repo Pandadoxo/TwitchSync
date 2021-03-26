@@ -34,7 +34,7 @@ public class BotConfig {
 
     public BotConfig() {
         this.prefix = "§8| §dTwitchSync §8» §r";
-        this.botPrefix = "| Botambus » ";
+        this.botPrefix = "| TwitchBot » ";
         this.botName = DEFAULT_NAME;
         this.botToken = DEFAULT_TOKEN;
         this.subMessage = DEFAULT_SUB_MESSAGE;
