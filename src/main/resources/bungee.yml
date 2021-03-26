@@ -1,0 +1,5 @@
+name: TwitchSync
+version: ${project.version}
+main: de.pandadoxo.twitchsync.Main
+author: Pandadoxo
+depends: [LuckPerms]
