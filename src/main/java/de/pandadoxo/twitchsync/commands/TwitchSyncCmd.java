@@ -34,10 +34,9 @@ import java.util.concurrent.TimeUnit;
 public class TwitchSyncCmd extends Command implements TabExecutor {
 
     private static final HashMap<ProxiedPlayer, Code> registering = new HashMap<>();
+    private static final HashMap<ProxiedPlayer, ScheduledTask> messageTask = new HashMap<>();
 
     private final String syntaxmsg = Main.WRONG_SYNTAX() + "/twitchsync (unregister)";
-    private int i;
-    private ScheduledTask task;
 
     public TwitchSyncCmd(String name) {
         super(name);
@@ -45,6 +44,31 @@ public class TwitchSyncCmd extends Command implements TabExecutor {
 
     public static HashMap<ProxiedPlayer, Code> getRegistering() {
         return registering;
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (!(sender instanceof ProxiedPlayer))
+            return new ArrayList<>();
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        if (!Main.getDoxperm().has(p, "twitchsync.register", true)) {
+            return new ArrayList<>();
+        }
+
+        List<String> tocomplete = new ArrayList<>();
+        List<String> complete = new ArrayList<>();
+
+        if (args.length == 1) {
+            tocomplete.addAll(Arrays.asList("unregister"));
+        }
+
+        for (
+                String tc : tocomplete) {
+            if (tc.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+                complete.add(tc);
+            }
+        }
+        return complete;
     }
 
     @Override
@@ -118,29 +142,36 @@ public class TwitchSyncCmd extends Command implements TabExecutor {
             //Send Message
             p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§8§oPlugin provided by §7§oPandadoxo: "));
             p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§7Bitte befolge folgende Schritte, um dich zu synchronisieren: "));
-            i = 1;
-            task = ProxyServer.getInstance().getScheduler().schedule(Main.getInstance(), () -> {
 
+            messageTask.put(p, ProxyServer.getInstance().getScheduler().schedule(Main.getInstance(), new Runnable() {
 
-                i++;
-                if (i == 3) p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§eSchritt 1 §7» Öffne Discord"));
-                else if (i == 6) {
-                    p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§eSchritt 2 §7» Um dich zu registrieren musst du" +
-                            " dem Discord-Server beitreten §8-> §3" +
-                            defaultChannel.createInvite().deadline(System.currentTimeMillis() + 5 * 60 * 1000).complete().getUrl()));
-                } else if (i == 9) {
-                    p.sendMessage(codemessage.create());
-                    p.sendMessage(botmessage.create());
-                } else if (i == 12) {
-                    p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§eSchritt 4 §7» Falls noch nicht geschehen, Verbinde deinen Twitch-Acoount " +
-                            "mit deinem Discord-Account. Gehe hierzu auf die §oBenutzereinstellungen §8-> §7§oVerknüpfungen §8-> §7§oTwitch"));
-                    p.sendMessage(Main.toBaseComponent("§8(§7§oDer Code läuft nach 5 Minuten ab [§3§o" +
-                            new SimpleDateFormat("HH:mm:ss").format(registering.get(p).getExireAt()) + " Uhr§o§7]§8)"));
-                } else return;
-                if (i == 18) {
-                    task.cancel();
+                int i = 0;
+
+                @Override
+                public void run() {
+
+                    i++;
+                    if (i == 3) {
+                        p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§eSchritt 1 §7» Öffne Discord"));
+                    } else if (i == 6) {
+                        p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§eSchritt 2 §7» Um dich zu registrieren musst du" +
+                                " dem Discord-Server beitreten §8-> §3" +
+                                defaultChannel.createInvite().deadline(System.currentTimeMillis() + 5 * 60 * 1000).complete().getUrl()));
+                    } else if (i == 9) {
+                        p.sendMessage(codemessage.create());
+                        p.sendMessage(botmessage.create());
+                    } else if (i == 12) {
+                        p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§eSchritt 4 §7» Falls noch nicht geschehen, Verbinde deinen Twitch-Acoount " +
+                                "mit deinem Discord-Account. Gehe hierzu auf die §oBenutzereinstellungen §8-> §7§oVerknüpfungen §8-> §7§oTwitch"));
+                        p.sendMessage(Main.toBaseComponent("§8(§7§oDer Code läuft nach 5 Minuten ab [§3§o" +
+                                new SimpleDateFormat("HH:mm:ss").format(registering.get(p).getExireAt()) + " Uhr§o§7]§8)"));
+                    } else return;
+                    if (i == 18) {
+                        messageTask.get(p).cancel();
+                        messageTask.remove(p);
+                    }
                 }
-            }, 0, 1, TimeUnit.SECONDS);
+            }, 0, 1, TimeUnit.SECONDS));
 
 
             ProxyServer.getInstance().getScheduler().schedule(Main.getInstance(), () -> {
@@ -174,31 +205,6 @@ public class TwitchSyncCmd extends Command implements TabExecutor {
 
         p.sendMessage(Main.toBaseComponent(syntaxmsg));
         return;
-    }
-
-    @Override
-    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        if (!(sender instanceof ProxiedPlayer))
-            return new ArrayList<>();
-        ProxiedPlayer p = (ProxiedPlayer) sender;
-        if (!Main.getDoxperm().has(p, "twitchsync.register", true)) {
-            return new ArrayList<>();
-        }
-
-        List<String> tocomplete = new ArrayList<>();
-        List<String> complete = new ArrayList<>();
-
-        if (args.length == 1) {
-            tocomplete.addAll(Arrays.asList("unregister"));
-        }
-
-        for (
-                String tc : tocomplete) {
-            if (tc.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
-                complete.add(tc);
-            }
-        }
-        return complete;
     }
 
 
