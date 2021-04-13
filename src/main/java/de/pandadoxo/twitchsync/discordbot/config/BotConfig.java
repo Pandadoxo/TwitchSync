@@ -29,6 +29,7 @@ public class BotConfig {
     private String botToken;
     private String subMessage;
     private String subLoseMessage;
+    private String serverDomain;
     private long guildId;
     private long roleId;
 
@@ -39,6 +40,7 @@ public class BotConfig {
         this.botToken = DEFAULT_TOKEN;
         this.subMessage = DEFAULT_SUB_MESSAGE;
         this.subLoseMessage = DEFAULT_SUB_LOSE_MESSAGE;
+        this.serverDomain = "Minecraft Server";
         this.guildId = DEFAULT_GUILD_ID;
         this.roleId = DEFAULT_ROLE_ID;
     }
@@ -89,6 +91,14 @@ public class BotConfig {
 
     public void setSubLoseMessage(String subLoseMessage) {
         this.subLoseMessage = subLoseMessage;
+    }
+
+    public String getServerDomain() {
+        return serverDomain;
+    }
+
+    public void setServerDomain(String serverDomain) {
+        this.serverDomain = serverDomain;
     }
 
     public long getGuildId() {

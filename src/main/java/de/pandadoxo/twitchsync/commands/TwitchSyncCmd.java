@@ -139,6 +139,7 @@ public class TwitchSyncCmd extends Command implements TabExecutor {
 
             for (int i = 0; i < 20; i++) p.sendMessage();
 
+
             //Send Message
             p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§8§oPlugin provided by §7§oPandadoxo: "));
             p.sendMessage(Main.toBaseComponent(Main.PREFIX() + "§7Bitte befolge folgende Schritte, um dich zu synchronisieren: "));

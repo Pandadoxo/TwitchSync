@@ -66,8 +66,8 @@ public class RegisterCmd implements PrivateCommand {
         if (player == null) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("Register Command");
-            builder.setDescription("Dieser Code existiert nicht! Bitte joine **Pandadoxo.de** und gib `/tiwtchsync` ein, um einen Code zu " +
-                    "bekommen");
+            builder.setDescription("Dieser Code existiert nicht! Bitte joine **" + Main.getBotConfig().getServerDomain() + "** und gib " +
+                    "`/tiwtchsync` ein, um einen Code zu bekommen");
             builder.setColor(new Color(152, 23, 175));
             user.openPrivateChannel().flatMap(privateChannel -> privateChannel.sendMessage(builder.build())).queue();
             return;
